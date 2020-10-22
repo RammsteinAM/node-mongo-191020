@@ -1,6 +1,7 @@
 import TodoContainer from "./TodoContainer.js";
 import TodoForm from "./TodoForm.js";
 import TodoList from "./TodoList.js";
+import wrapper from "./errorHandler.js"
 import { BASE_URL } from "./constants.js";
 
 const root = document.getElementById("root");
@@ -10,10 +11,12 @@ class App {
     const res = await fetch(`${BASE_URL}/${id}`);
     const resJson = await res.json();
     if (!resJson.success) {
-      throw Error();
+      throw Error("Unable to find the item.");
     }
     return resJson;
   }
+
+  editTempData = {};
   
   async createTodo(text) {
     const res = await fetch(BASE_URL, {
@@ -24,18 +27,17 @@ class App {
       body: JSON.stringify({ text }),
     });
     const resJson = await res.json();
-    if (!resJson.success) {
-      throw Error("Operation failed.");
+    if (!resJson.success) {      
+      throw Error("Failed to create Todo.");
     }
     this.render();
   }
 
-  async editTodoItem(id) {
+  async startEditingTodoItem(id) {
     const card = document.querySelector(`*[data-id="${id}"]`);
-    debugger
     const todo = await this.getTodoItem(id);
     if (!todo.success) {
-      throw Error("Operation failed.");
+      throw Error("Failed to edit Todo.");
     }
     const editTodoForm = new TodoForm(
       BASE_URL,
@@ -44,7 +46,14 @@ class App {
       todo.data.text
     );
     const form = editTodoForm.render();
+    this.editTempData[id] = card.outerHTML;
     card.outerHTML = form;
+  }
+
+  cancelEdit(id) {
+    const card = document.querySelector(`*[data-id="${id}"]`);
+    card.outerHTML = this.editTempData[id];
+    delete this.editTempData[id];
   }
 
   async updateTodo(_id, text) {
@@ -69,37 +78,39 @@ class App {
     const res = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
     });    
-    const resJson = await res.json();
-    
+    const resJson = await res.json();    
     if (!resJson.success) {
-      throw Error();
+      throw Error("Unable to delete Todo.");
     }
     const card = document.querySelector(`*[data-id="${id}"]`);
     card.remove();
   }
 
-  attachListeners() {
-    const container = document.getElementById("todo-container");
-    container.addEventListener("click", (e) => {
+  async attachListeners() {
+    const rootElement = document.getElementById("root");
+    rootElement.addEventListener("click", (e) => {
       const action = e.target.dataset.action;
       const id = e.target.dataset.id;
       switch (action) {
         case "edit":
-          this.editTodoItem(id);
+          wrapper(() => this.startEditingTodoItem(id), root);
           break;
         case "delete":
-          this.deleteTodoItem(id);
+          wrapper(() => this.deleteTodoItem(id), root);
+          break;
+        case "cancel":
+          this.cancelEdit(id);
           break;
       }
     });
-    container.addEventListener("submit", (e) => {
+    rootElement.addEventListener("submit", (e) => {
       e.preventDefault();
       const id = e.target.id.value;
       const text = e.target.text.value;
       if (!id) {
-        this.createTodo(text);
+        wrapper(() => this.createTodo(text), root);
       } else {
-        this.updateTodo(id, text);
+        wrapper(() => this.updateTodo(id, text), root);
       }
     });
   }
@@ -107,9 +118,9 @@ class App {
   async render() {
     const todoContainer = new TodoContainer();
     root.innerHTML = await todoContainer.render();
-    this.attachListeners();
   }
 }
 
 const app = new App();
 app.render();
+app.attachListeners();

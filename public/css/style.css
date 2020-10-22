@@ -50,7 +50,8 @@ form {
   margin: 0;
 }
 
-form, .form-container {
+form,
+.form-container {
   height: inherit;
 }
 
@@ -71,6 +72,7 @@ textarea.todo-text {
 }
 
 textarea:focus,
+button:focus,
 input:focus {
   outline: none;
 }
@@ -79,37 +81,21 @@ input:focus {
   position: relative;
 }
 
-.submit-button {
+.button {
   width: 40px;
   background-color: var(--main-bg-button);
   color: #ffffff;
   border: none;
-  border-bottom-right-radius: 5px;
-  border-top-right-radius: 5px;
   cursor: pointer;
   font-size: 1.2em;
   height: 100%;
-  position: absolute;
-  bottom: 0;
-  right: 0;
 }
 
-.save-button {
-  width: 100%;
-  background-color: var(--main-bg-button);
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0px;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-}
-
-input[type="submit"] {
+input[type="submit"], button {
   transition: background-color 0.2s ease-in-out;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover, button:hover {
   background-color: var(--main-bg-button-hover);
 }
 
@@ -169,7 +155,6 @@ main {
   padding: 7px 14px;
 }
 
-
 .card-control-container button {
   cursor: pointer;
   background-color: #383838;
@@ -192,7 +177,7 @@ main {
 
 .icon {
   color: white;
-  text-align: center;  
+  text-align: center;
   pointer-events: none;
 }
 
@@ -200,7 +185,7 @@ main {
   font-size: 28px;
 }
 
-button .icon:before {
+.card-action-button .icon:before {
   font-size: 15px;
 }
 
@@ -209,4 +194,26 @@ button .icon:before {
   top: calc(50% - 14px);
   right: 8px;
   z-index: 1;
+}
+
+.form-button {
+  position: relative;
+  height: 100%;
+}
+
+.form-button-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.form-button-container :first-child .button {
+  border-top-right-radius: 5px;
+}
+
+.form-button-container :last-child .button {
+  border-bottom-right-radius: 5px;
 }

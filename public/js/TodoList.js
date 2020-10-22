@@ -5,7 +5,7 @@ export default class TodoList {
         const res = await fetch(BASE_URL);
         const resJson = await res.json();
         if (!resJson.success){
-            throw Error();
+            throw Error("Couldn't get Todos.");
         }
         return resJson.data;
     }
@@ -15,8 +15,8 @@ export default class TodoList {
         <div class="todo-card" data-id="${todoItem._id}">
             <div class="card-content">${todoItem.text}</div>
             <div class="card-control-container"> 
-            <button data-action="edit" data-id="${todoItem._id}" title="Edit"><i class="fa fa-pencil icon"></i></button>
-            <button data-action="delete" data-id="${todoItem._id}" title="Delete"><i class="fa fa-trash-o icon"></i></button>
+            <button class="card-action-button" data-action="edit" data-id="${todoItem._id}" title="Edit"><i class="fa fa-pencil icon"></i></button>
+            <button class="card-action-button" data-action="delete" data-id="${todoItem._id}" title="Delete"><i class="fa fa-trash-o icon"></i></button>
             </div>
         </div>
         `;

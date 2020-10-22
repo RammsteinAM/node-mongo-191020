@@ -1,8 +1,7 @@
-// export default async function wrapper(app) {
-//     try {
-//         await app.render();
-// app.attachListeners();
-//     } catch (error) {
-//         debugger
-//     }
-// }
+export default async function wrapper(func, root) {
+    try {
+        await func();
+    } catch (error) {
+        root.innerHTML = `<div>${error}</div>`
+    }
+}
